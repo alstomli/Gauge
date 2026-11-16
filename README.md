@@ -11,7 +11,7 @@ Gauge reads existing local logs. Collection and dashboard refresh make no model 
 - Python **3.11+**, [uv](https://docs.astral.sh/uv/getting-started/installation/), and a local Codex installation that writes compatible session logs.
 - A desktop host supporting MCP Apps for the embedded panel. Other MCP clients can use the text tools; UI placement depends on the host.
 - Git for GitHub marketplace installation. **Node.js is only needed to change/rebuild the UI**, not to run a release.
-- Windows desktop rendering has been exercised during development. macOS/Linux paths and dependencies are portable, but native desktop rendering there is **not yet verified**. CI is configured for all three platforms; it must run before claiming tested support.
+- Automated accounting, packaging and MCP launch/refresh checks pass on Windows, macOS and Linux with Python 3.11 and 3.13. Windows desktop rendering has been exercised during development; native desktop rendering on macOS/Linux is **not yet verified**. See [validation details](docs/VALIDATION.md).
 
 Install uv using its official instructions and make sure `uv --version` works. Restart the desktop app after installation so its process inherits the updated PATH. First launch may download dependencies from the package registry; subsequent refreshes stay local.
 
