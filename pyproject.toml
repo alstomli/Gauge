@@ -1,0 +1,29 @@
+[build-system]
+requires = ["setuptools>=77,<85"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "codex-cache-monitor"
+version = "0.1.0"
+description = "Gauge: local Codex token, prompt-cache and estimated-credit MCP App"
+readme = "README.md"
+license = "MIT"
+license-files = ["LICENSE", "THIRD_PARTY_NOTICES.md"]
+authors = [{name = "zihan"}]
+requires-python = ">=3.11"
+dependencies = ["mcp>=1.30,<2"]
+
+[project.urls]
+Repository = "https://github.com/alstomli/Gauge"
+Issues = "https://github.com/alstomli/Gauge/issues"
+
+[project.scripts]
+cache-monitor = "cache_monitor.__main__:main"
+gauge = "cache_monitor.__main__:main"
+
+[tool.setuptools.package-data]
+cache_monitor = ["web/*"]
+
+[tool.setuptools.packages.find]
+include = ["cache_monitor*"]
+

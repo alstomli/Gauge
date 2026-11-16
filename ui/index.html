@@ -1,0 +1,83 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="color-scheme" content="light dark">
+  <title>Gauge</title>
+  <meta name="description" content="Gauge — local token usage, cache reuse and estimated credits for Codex.">
+  <style>/* MONITOR_CSS */</style>
+</head>
+<body>
+  <main id="monitor">
+    <header class="app-header">
+      <div class="brand"><span class="brand-mark" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none"><path d="M4.5 18a9 9 0 1 1 15 0M5 12h2M7 6.5l1.5 1.5M12 4v2M19 12h-2"/><path class="gauge-needle" d="m12 13 4-5"/><circle cx="12" cy="13" r="1.5"/></svg></span><div><h1>Gauge</h1><div class="eyebrow">TOKENS · CACHE · CREDITS</div></div></div>
+      <div class="header-actions">
+        <span id="connection" class="badge">Connecting…</span>
+        <button id="appearance" type="button" class="quiet">Light theme</button>
+      </div>
+    </header>
+    <p id="display-note" class="secondary" role="status" hidden></p>
+    <div id="error" class="error" role="alert" hidden></div>
+    <div class="toolbar">
+      <div class="actions"><button id="auto" type="button" aria-pressed="true">Auto refresh on</button></div>
+    </div>
+    <div id="empty" class="empty"><h2>Waiting for this chat's usage</h2><p>Completed model calls appear here after their usage is written to the local logs.</p></div>
+    <section id="detail" aria-label="Current chat usage" hidden>
+      <div class="detail-title"><div><div class="eyebrow">WORKSPACE</div><h2 id="chat-title"></h2></div><div class="detail-badges"><span id="model-label" class="model-label"></span><span class="badge" id="quality-label"></span></div></div>
+      <section id="credit-panel" class="credit-panel" aria-labelledby="credits-title">
+        <div class="credit-heading"><div><div class="eyebrow">WHOLE CHAT</div><h2 id="credits-title">Estimated credits</h2></div><div class="credit-total"><span id="credits-total">—</span><span class="credit-unit">credits</span></div></div>
+        <div class="credit-breakdown">
+          <div class="credit-part"><h3>Fresh input</h3><div id="credits-input" class="credit-value">—</div><div id="credits-input-tokens" class="secondary mono"></div></div>
+          <div class="credit-part"><h3>Cached input</h3><div id="credits-cached" class="credit-value">—</div><div id="credits-cached-tokens" class="secondary mono"></div></div>
+          <div class="credit-part"><h3>Output</h3><div id="credits-output" class="credit-value">—</div><div id="credits-output-tokens" class="secondary mono"></div></div>
+        </div>
+        <p id="credits-coverage" class="secondary"></p>
+        <details class="credit-details"><summary>Pricing details</summary><p>Estimates apply current Standard-speed token rates to each call's recorded model. Fresh input excludes cached input. This is not billed usage or your remaining plan allowance; speed modes, context surcharges, plan rules and other charges may differ. Unfinished calls and separate agent chats are excluded.</p><p id="credits-rates" class="mono"></p><div class="credit-source"><span id="credits-checked"></span><button id="credits-source" type="button" class="quiet">Published rates ↗</button></div></details>
+      </section>
+      <div class="metrics">
+        <section class="stat stat-primary">
+          <details class="metric-info">
+            <summary aria-label="About whole-chat cache reuse" aria-controls="whole-chat-help"><svg viewBox="0 0 20 20" aria-hidden="true"><circle cx="10" cy="10" r="7.5"/><path d="M10 9v5M10 6v.5"/></svg></summary>
+            <div id="whole-chat-help" class="metric-help" role="note">Cache reuse across every recorded completed model call in this chat: total cached input tokens divided by total input tokens. Calls with more input tokens carry more weight. Completed attempts replaced by an edited prompt still count toward whole-chat usage. Unfinished calls are excluded.</div>
+          </details>
+          <div class="stat-title">Whole chat <span>Token weighted</span></div><div id="weighted" class="metric">—</div><div id="weighted-base" class="stat-base"></div><div id="weighted-count" class="stat-note"></div>
+        </section>
+        <section class="stat">
+          <details class="metric-info">
+            <summary aria-label="About latest model call" aria-controls="latest-call-help"><svg viewBox="0 0 20 20" aria-hidden="true"><circle cx="10" cy="10" r="7.5"/><path d="M10 9v5M10 6v.5"/></svg></summary>
+            <div id="latest-call-help" class="metric-help" role="note">Cache reuse for the single most recent completed model call: cached input tokens divided by input tokens. One prompt can trigger several model calls as the assistant works and uses tools.</div>
+          </details>
+          <div class="stat-title">Latest model call</div><div id="latest" class="metric">—</div><div id="latest-base" class="stat-base"></div><div id="latest-uncached" class="stat-note"></div>
+        </section>
+        <section class="stat">
+          <details class="metric-info">
+            <summary aria-label="About latest prompt" aria-controls="latest-prompt-help"><svg viewBox="0 0 20 20" aria-hidden="true"><circle cx="10" cy="10" r="7.5"/><path d="M10 9v5M10 6v.5"/></svg></summary>
+            <div id="latest-prompt-help" class="metric-help" role="note">Combined cache reuse for all completed model calls attributed to the latest prompt with recorded usage. A prompt can trigger several calls. Uses total cached input tokens divided by total input tokens; unfinished calls are excluded.</div>
+          </details>
+          <div class="stat-title">Latest prompt</div><div id="turn-rate" class="metric">—</div><div id="turn-base" class="stat-base"></div><div class="stat-note">Combined input-token reuse</div>
+        </section>
+      </div>
+      <section class="chart-panel">
+        <div class="section-title"><div><h2>Cache reuse</h2><span class="secondary">Reported cached input per completed call</span><span id="chart-scale" class="secondary">Percentage axis</span></div><span id="history-label" class="secondary mono"></span></div>
+        <div id="chart"></div>
+        <div class="history-control">
+          <div class="history-slider">
+            <div id="history-rail" class="history-rail">
+              <div class="history-track" aria-hidden="true"></div>
+              <input id="limit" type="range" min="1" max="2000" step="1" value="500" dir="rtl" aria-label="Visible completed calls" aria-describedby="range-help history-label">
+            </div>
+            <div class="history-endpoints" aria-hidden="true"><span>Earlier</span><span>Latest</span></div>
+          </div>
+          <output id="history-window" for="limit" class="mono">Last 500 calls</output>
+          <span id="range-help" class="sr-only">Drag left to include more calls. Drag right to show fewer calls.</span>
+        </div>
+      </section>
+      <details class="quality"><summary>Data quality &amp; measurement</summary><div id="quality-detail"></div><p>Cache reuse is cached input tokens divided by input tokens. Aggregates use token-weighted totals. Unfinished calls have no reported usage yet.</p></details>
+    </section>
+    <footer><span id="freshness">Waiting for first scan</span><span>Local records only · No model calls for refresh</span></footer>
+    <div id="announcement" class="sr-only" role="status" aria-live="polite"></div>
+  </main>
+  <script>/* MONITOR_JS */</script>
+</body>
+</html>

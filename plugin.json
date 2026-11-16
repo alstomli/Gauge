@@ -1,0 +1,28 @@
+{
+  "$schema": "https://agent-plugins.org/schemas/1.0.0/plugin.schema.json",
+  "name": "gauge",
+  "version": "0.1.0",
+  "description": "Local Codex token usage, prompt-cache reuse and estimated credits in an embedded dashboard.",
+  "author": {"name": "zihan", "url": "https://github.com/alstomli"},
+  "repository": "https://github.com/alstomli/Gauge",
+  "license": "MIT",
+  "keywords": ["codex", "tokens", "cache", "credits", "monitoring", "mcp-apps"],
+  "extensions": {
+    "com.openai": {
+      "requires_local_executor": true,
+      "interface": {
+        "displayName": "Gauge",
+        "shortDescription": "Tokens · Cache · Credits",
+        "longDescription": "Read locally recorded Codex usage for the current chat. Compare whole-chat, latest-call and latest-prompt cache reuse, view recent history, and estimate credits by token type. Python 3.11+ and uv are required; the host must support MCP Apps. Local logs may be incomplete and estimates are not billed usage or remaining allowance.",
+        "developerName": "zihan",
+        "category": "Developer Tools",
+        "capabilities": ["Read"],
+        "defaultPrompt": ["Open Gauge for this chat."],
+        "brandColor": "#176B59",
+        "brandColorDark": "#76E2C4",
+        "composerIcon": "./assets/gauge.svg",
+        "logo": "./assets/gauge.svg"
+      }
+    }
+  }
+}
