@@ -6,7 +6,7 @@
       "name": "gauge",
       "source": "./",
       "description": "Local token usage, prompt-cache reuse and API-equivalent cost estimates for Claude Code sessions.",
-      "version": "0.1.2",
+      "version": "0.2.0",
       "category": "Developer Tools"
     }
   ]

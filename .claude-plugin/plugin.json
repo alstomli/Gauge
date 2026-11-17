@@ -1,6 +1,6 @@
 {
   "name": "gauge",
-  "version": "0.1.2",
+  "version": "0.2.0",
   "description": "Local token usage, prompt-cache reuse and API-equivalent cost estimates for Claude Code sessions (and Codex chats). Reads local transcripts only; no model calls.",
   "author": {"name": "zihan", "url": "https://github.com/alstomli"},
   "homepage": "https://github.com/alstomli/Gauge",
