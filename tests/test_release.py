@@ -43,6 +43,20 @@ class ReleaseTest(unittest.TestCase):
         onboarding = (plugin_root / plugin['extensions']['com.openai']['onboardingSkill']).resolve()
         self.assertTrue(onboarding.is_relative_to(plugin_root / 'skills') and onboarding.is_file())
 
+    def test_claude_code_marketplace_and_manifest_resolve_inside_release(self):
+        marketplace = json.loads((ROOT / '.claude-plugin/marketplace.json').read_text(encoding='utf-8'))
+        entry, = marketplace['plugins']
+        self.assertEqual((ROOT / entry['source']).resolve(), ROOT)
+        plugin = json.loads((ROOT / '.claude-plugin/plugin.json').read_text(encoding='utf-8'))
+        codex_plugin = json.loads((ROOT / 'plugin.json').read_text(encoding='utf-8'))
+        self.assertEqual((entry['name'], entry['version']), (plugin['name'], plugin['version']))
+        self.assertEqual((plugin['name'], plugin['version']), (codex_plugin['name'], codex_plugin['version']))
+        server, = plugin['mcpServers'].values()
+        self.assertEqual(server['command'], 'uv')
+        self.assertIn('${CLAUDE_PLUGIN_ROOT}', server['args'])
+        # Claude Code discovers bundled skills under skills/ at the plugin root.
+        self.assertTrue((ROOT / 'skills/gauge/SKILL.md').is_file())
+
     def test_archive_excludes_private_data_and_verifies_each_file(self):
         with tempfile.TemporaryDirectory() as temp:
             archive = create_release(ROOT, Path(temp))
@@ -50,7 +64,8 @@ class ReleaseTest(unittest.TestCase):
             with zipfile.ZipFile(archive) as bundle:
                 names = set(bundle.namelist())
                 self.assertTrue({'plugin.json', 'mcp.json', 'uv.lock', 'LICENSE',
-                                 '.agents/plugins/marketplace.json', 'cache_monitor/web/mcp-app.html',
+                                 '.agents/plugins/marketplace.json', '.claude-plugin/plugin.json',
+                                 '.claude-plugin/marketplace.json', 'cache_monitor/web/mcp-app.html',
                                  'docs/screenshots/gauge-dark.png', 'docs/screenshots/gauge-light.png',
                                  'scripts/screenshot_preview.mjs'} <= names)
                 plugin = json.loads(bundle.read('plugin.json'))

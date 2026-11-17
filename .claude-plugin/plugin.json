@@ -1,0 +1,16 @@
+{
+  "name": "gauge",
+  "version": "0.1.2",
+  "description": "Local token usage, prompt-cache reuse and API-equivalent cost estimates for Claude Code sessions (and Codex chats). Reads local transcripts only; no model calls.",
+  "author": {"name": "zihan", "url": "https://github.com/alstomli"},
+  "homepage": "https://github.com/alstomli/Gauge",
+  "repository": "https://github.com/alstomli/Gauge",
+  "license": "MIT",
+  "keywords": ["claude-code", "codex", "tokens", "cache", "cost", "monitoring", "mcp-apps"],
+  "mcpServers": {
+    "cache-monitor": {
+      "command": "uv",
+      "args": ["run", "--locked", "--no-dev", "--project", "${CLAUDE_PLUGIN_ROOT}", "gauge", "mcp"]
+    }
+  }
+}

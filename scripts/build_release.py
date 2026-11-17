@@ -15,6 +15,7 @@ ROOT_FILES = (
     'SECURITY.md', 'CONTRIBUTING.md', 'THIRD_PARTY_NOTICES.md', 'MANIFEST.in',
     'pyproject.toml', 'requirements.lock', 'uv.lock', 'plugin.json', 'mcp.json',
     'package.json', 'package-lock.json', '.agents/plugins/marketplace.json',
+    '.claude-plugin/plugin.json', '.claude-plugin/marketplace.json',
 )
 DIRECTORIES = {
     'cache_monitor': {'*.py'}, 'cache_monitor/web': {'*.html'},
@@ -44,13 +45,14 @@ def create_release(root: Path = ROOT, output: Path | None = None) -> Path:
     root = root.resolve()
     project = tomllib.loads((root / 'pyproject.toml').read_text(encoding='utf-8'))['project']
     plugin = json.loads((root / 'plugin.json').read_text(encoding='utf-8'))
+    claude_plugin = json.loads((root / '.claude-plugin/plugin.json').read_text(encoding='utf-8'))
     package = json.loads((root / 'package.json').read_text(encoding='utf-8'))
     version = project['version']
     module = ast.parse((root / 'cache_monitor/__init__.py').read_text(encoding='utf-8'))
     runtime_version = next(ast.literal_eval(node.value) for node in module.body
                            if isinstance(node, ast.Assign)
                            and any(isinstance(target, ast.Name) and target.id == '__version__' for target in node.targets))
-    if any(value != version for value in (plugin['version'], package['version'], runtime_version)):
+    if any(value != version for value in (plugin['version'], claude_plugin['version'], package['version'], runtime_version)):
         raise ValueError('Python metadata, runtime, UI and plugin versions must match')
     files = release_files(root)
     contents = {path.relative_to(root).as_posix(): path.read_bytes() for path in files}

@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="color-scheme" content="light dark">
   <title>Gauge</title>
-  <meta name="description" content="Gauge — local token usage, cache reuse and estimated credits for Codex.">
+  <meta name="description" content="Gauge — local token usage, cache reuse and cost estimates for Codex and Claude Code.">
   <style>/* MONITOR_CSS */</style>
 </head>
 <body>
@@ -26,14 +26,15 @@
     <section id="detail" aria-label="Current chat usage" hidden>
       <div class="detail-title"><div><div class="eyebrow">WORKSPACE</div><h2 id="chat-title"></h2></div><div class="detail-badges"><span id="model-label" class="model-label"></span><span class="badge" id="quality-label"></span></div></div>
       <section id="credit-panel" class="credit-panel" aria-labelledby="credits-title">
-        <div class="credit-heading"><div><div class="eyebrow">WHOLE CHAT</div><h2 id="credits-title">Estimated credits</h2></div><div class="credit-total"><span id="credits-total">—</span><span class="credit-unit">credits</span></div></div>
+        <div class="credit-heading"><div><div class="eyebrow">WHOLE CHAT</div><h2 id="credits-title">Estimated credits</h2></div><div class="credit-total"><span id="credits-total">—</span><span id="credits-unit" class="credit-unit">credits</span></div></div>
         <div class="credit-breakdown">
           <div class="credit-part"><h3>Fresh input</h3><div id="credits-input" class="credit-value">—</div><div id="credits-input-tokens" class="secondary mono"></div></div>
           <div class="credit-part"><h3>Cached input</h3><div id="credits-cached" class="credit-value">—</div><div id="credits-cached-tokens" class="secondary mono"></div></div>
+          <div id="credits-write-part" class="credit-part" hidden><h3>Cache writes</h3><div id="credits-write" class="credit-value">—</div><div id="credits-write-tokens" class="secondary mono"></div></div>
           <div class="credit-part"><h3>Output</h3><div id="credits-output" class="credit-value">—</div><div id="credits-output-tokens" class="secondary mono"></div></div>
         </div>
         <p id="credits-coverage" class="secondary"></p>
-        <details class="credit-details"><summary>Pricing details</summary><p>Estimates apply current Standard-speed token rates to each call's recorded model. Fresh input excludes cached input. This is not billed usage or your remaining plan allowance; speed modes, context surcharges, plan rules and other charges may differ. Unfinished calls and separate agent chats are excluded.</p><p id="credits-rates" class="mono"></p><div class="credit-source"><span id="credits-checked"></span><button id="credits-source" type="button" class="quiet">Published rates ↗</button></div></details>
+        <details class="credit-details"><summary>Pricing details</summary><p>Estimates apply current Standard-speed token rates to each call's recorded model. Fresh input excludes cached input and cache writes. This is not billed usage or your remaining plan allowance; speed modes, context surcharges, plan rules and other charges may differ. For Claude Code the amount is the API-equivalent cost at list prices, even when a subscription covers usage. Unfinished calls and separate agent chats are excluded.</p><p id="credits-rates" class="mono"></p><div class="credit-source"><span id="credits-checked"></span><button id="credits-source" type="button" class="quiet">Published rates ↗</button></div></details>
       </section>
       <div class="metrics">
         <section class="stat stat-primary">

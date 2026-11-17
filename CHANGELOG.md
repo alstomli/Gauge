@@ -1,5 +1,12 @@
 # Changelog
 
+## Unreleased
+
+- Support Claude Code: index `~/.claude/projects` transcripts (deduplicated by message ID, grouped by prompt ID, subagents kept separate), with a Claude Code plugin manifest and marketplace under `.claude-plugin/`.
+- Estimate Claude Code cost in USD at Anthropic API list prices, including 5-minute and 1-hour cache writes, shown in a new cache-writes column.
+- Add `--claude-logs` and `--no-claude`. Claude Code-only installs keep the index in `~/.claude/gauge`.
+- Update the bundled skill for Claude Code session IDs and MCP diagnostics.
+
 ## 0.1.2 — 2026-11-16
 
 - State Codex-only availability in plugin metadata, opening prompts, README and MCP guidance. Check conversation type before dependency troubleshooting so ChatGPT users are directed to Codex.

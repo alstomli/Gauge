@@ -19,6 +19,9 @@ def aggregate(rows) -> dict:
         "input_tokens": inputs,
         "cached_input_tokens": cached,
         "uncached_input_tokens": inputs - cached,
+        # Claude Code only: input written to the prompt cache (billed above the input rate).
+        "cache_write_5m_tokens": sum(r.get("cache_write_5m_tokens") or 0 for r in rows),
+        "cache_write_1h_tokens": sum(r.get("cache_write_1h_tokens") or 0 for r in rows),
         "output_tokens": sum(r["output_tokens"] for r in rows),
         "cache_reuse": cached / inputs if inputs else None,
         "calls": len(rows),
@@ -64,6 +67,13 @@ class Store:
             self.db.execute("ALTER TABLE sessions ADD COLUMN expected_at TEXT")
         if "session_kind" not in {r[1] for r in self.db.execute("PRAGMA table_info(sessions)")}:
             self.db.execute("ALTER TABLE sessions ADD COLUMN session_kind TEXT")
+        if "provider" not in {r[1] for r in self.db.execute("PRAGMA table_info(sessions)")}:
+            # NULL means Codex, the only provider before Claude Code support.
+            self.db.execute("ALTER TABLE sessions ADD COLUMN provider TEXT")
+        usage_columns = {r[1] for r in self.db.execute("PRAGMA table_info(usage)")}
+        for column in ("cache_write_5m_tokens", "cache_write_1h_tokens"):
+            if column not in usage_columns:
+                self.db.execute(f"ALTER TABLE usage ADD COLUMN {column} INTEGER NOT NULL DEFAULT 0")
         self.db.commit()
 
     def close(self):
@@ -82,6 +92,16 @@ class Store:
 
     def quality(self, session: dict, rows: list[dict]) -> dict:
         issues = json.loads(session["issues"])
+        if session.get("provider") == "claude":
+            # Claude Code records per-call usage only; there are no cumulative counters to verify against.
+            return {
+                "status": "degraded" if issues else "unreconciled",
+                "source": "response" if rows else "unavailable",
+                "reconciled": None,
+                "issues": list(dict.fromkeys(issues)),
+                "notes": ["Claude Code transcripts record each call's usage but no running totals, so totals are not cross-checked."],
+                "counter_scope": None,
+            }
         primary = bool(rows and rows[0]["source"] == "response")
         reconciled = None
         rollouts = [dict(r) for r in self.db.execute("SELECT * FROM rollout_checks WHERE session_id=?", (session["id"],))]
@@ -202,6 +222,7 @@ class Store:
                 result.append({
                     "id": session["id"], "project": session["project"],
                     "source": session["source"], "version": session["version"],
+                    "provider": session["provider"] or "codex",
                     "session_kind": session["session_kind"] or "unknown",
                     "last_record_at": rows[-1]["timestamp"] if rows else None,
                     "summary": aggregate(rows), "quality": self.quality(session, rows),
@@ -229,7 +250,7 @@ class Store:
                 models.setdefault(row["model"], []).append(row)
             return {
                 "session": {"id": session_id, "project": session["project"], "source": session["source"],
-                            "session_kind": session["session_kind"] or "unknown"},
+                            "provider": session["provider"] or "codex", "session_kind": session["session_kind"] or "unknown"},
                 "summary": aggregate(rows), "visible_summary": aggregate(visible),
                 "usage_by_model": [{"model": model, **aggregate(group)} for model, group in models.items()],
                 "latest": rows[-1] if rows else None,
