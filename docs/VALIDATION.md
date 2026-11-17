@@ -1,5 +1,14 @@
 # Release validation
 
+## 0.1.2 — 2026-11-16
+
+- All 21 Python tests passed on Windows / Python 3.13; UI syntax checks, all five JavaScript test files and the 0.1.2 UI build passed.
+- The extracted plugin passed locked installation, manifest startup, tool/UI-resource discovery, verified accounting and live refresh. An isolated wheel import verified version 0.1.2 and its packaged HTML.
+- A disposable Codex home installed version 0.1.2 and discovered the enabled `gauge:gauge` skill without errors.
+- The plugin metadata, skill, README and MCP guidance state Codex-only availability. This is user guidance, not a host-level compatibility block. Automatic skill selection and ChatGPT failure-path behavior remain unverified.
+- Publication requires the six Windows/macOS/Linux Python 3.11/3.13 [CI jobs](https://github.com/alstomli/Gauge/actions/workflows/ci.yml) to pass. Release artifacts are built by CI and audited against the release commit and checksums before publication.
+- Native macOS/Linux desktop rendering remains unverified. See [Gauge 0.1.2](https://github.com/alstomli/Gauge/releases/tag/v0.1.2) for the published assets.
+
 ## 0.1.1 — 2026-11-16
 
 Local checks use synthetic usage records and disposable profiles.

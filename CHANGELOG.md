@@ -1,5 +1,10 @@
 # Changelog
 
+## 0.1.2 — 2026-11-16
+
+- State Codex-only availability in plugin metadata, opening prompts, README and MCP guidance. Check conversation type before dependency troubleshooting so ChatGPT users are directed to Codex.
+- Redesign the README around compatibility, screenshots, installation, updates and troubleshooting. Default marketplace setup explicitly follows `main`.
+
 ## 0.1.1 — 2026-11-16
 
 - Add dark/light UI screenshots using synthetic sample usage and a reproducible preview builder.

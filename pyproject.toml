@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "codex-cache-monitor"
-version = "0.1.1"
+version = "0.1.2"
 description = "Gauge: local Codex token, prompt-cache and estimated-credit MCP App"
 readme = "README.md"
 license = "MIT"

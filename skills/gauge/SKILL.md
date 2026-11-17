@@ -1,9 +1,23 @@
 ---
 name: gauge
-description: Open Gauge for the current Codex chat, set up Gauge, or diagnose missing Gauge tools and local startup failures, including a missing uv executable.
+description: Open Gauge for local Codex chats, explain Codex-only availability when invoked from ChatGPT, or diagnose missing Gauge tools and local startup dependencies.
 ---
 
 # Gauge
+
+## Check supported conversation type first
+
+Gauge currently supports **local Codex chats only**. ChatGPT conversations are not supported, including ChatGPT conversations on web, desktop, or mobile. A desktop app may contain both ChatGPT and Codex modes; its branding or window title alone does not establish the conversation type.
+
+When the context identifies the current conversation as ChatGPT rather than Codex, respond:
+
+> Gauge is currently available only in Codex. It can't open in a ChatGPT conversation. Open a local Codex chat and ask "Open Gauge for this chat."
+
+Stop there. Do not attempt a dashboard call, ask for a ChatGPT conversation ID, recommend installing uv, or suggest reconnecting Gauge for that unsupported conversation.
+
+For a known local Codex chat, continue below. When tools are unavailable and the conversation type is unclear, explain the Codex-only requirement and establish whether the user is in Codex before diagnosing local dependencies. Missing tools or a missing `CODEX_THREAD_ID` alone do not prove the user is in ChatGPT.
+
+## Codex startup
 
 Gauge's local MCP server starts with `uv run --locked --no-dev --project <plugin-root> gauge mcp`.
 If `uv` cannot be found by the desktop app, the server never starts and none of its tools are registered. A failed tool lookup alone does not establish whether Gauge is installed, disconnected, or missing a dependency. This bundled skill can guide diagnosis without a running MCP server.

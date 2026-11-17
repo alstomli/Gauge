@@ -42,7 +42,7 @@ def create_server(monitor: Monitor) -> Server:
     async def list_tools():
         return [
             types.Tool(name="show_cache_dashboard", title="Open Gauge",
-                       description="Open Gauge, a local dashboard for token usage, prompt-cache reuse and estimated credits, fixed to the current chat. Always pass the current chat ID. Usage reflects completed recorded model calls.",
+                       description="Open Gauge for a local Codex chat only. ChatGPT conversations are not supported. Show token usage, prompt-cache reuse and estimated credits, fixed to the current Codex chat. Always pass its explicit chat ID. Usage reflects completed recorded model calls.",
                        inputSchema=dashboard_selection, annotations=ANNOTATIONS, _meta=UI_META),
             types.Tool(name="refresh_cache_dashboard", title="Refresh cache dashboard",
                        description="Refresh Gauge for the current chat without a model call.",
@@ -60,7 +60,7 @@ def create_server(monitor: Monitor) -> Server:
         sid, limit = arguments.get("session_id"), arguments.get("limit", 500)
         if name in ("show_cache_dashboard", "refresh_cache_dashboard"):
             if not isinstance(sid, str) or not sid.strip():
-                return types.CallToolResult(isError=True, content=[types.TextContent(type="text", text="Open the monitor with the current chat ID.")])
+                return types.CallToolResult(isError=True, content=[types.TextContent(type="text", text="Open Gauge from a local Codex chat using its current Codex chat ID. Gauge does not support ChatGPT conversations.")])
             data = monitor.dashboard(sid, limit)
             data["sessions"] = [session for session in data["sessions"] if session["id"] == sid]
             detail = data["detail"]
@@ -123,5 +123,5 @@ async def run(monitor: Monitor):
                 tools=types.ToolsCapability(listChanged=False), resources=types.ResourcesCapability(),
                 extensions={"io.modelcontextprotocol/ui": {"mimeTypes": [MIME]}},
             ),
-            instructions="Gauge is a read-only local Codex token, prompt-cache and estimated-credit monitor. Use the chat ID supplied by the user or current chat context; never silently select the most recently active unrelated chat. No model calls are needed for dashboard refresh.",
+            instructions="Gauge currently supports local Codex chats only; ChatGPT conversations are not supported. If invoked from a ChatGPT conversation, explain this limitation and direct the user to open a local Codex chat and ask 'Open Gauge for this chat.' Gauge is a read-only local Codex token, prompt-cache and estimated-credit monitor. Use the Codex chat ID supplied by the user or current chat context; never silently select the most recently active unrelated chat. No model calls are needed for dashboard refresh.",
         ))
