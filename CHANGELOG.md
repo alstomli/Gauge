@@ -1,11 +1,13 @@
 # Changelog
 
-## Unreleased
+## 0.2.0 — 2026-11-17
 
 - Support Claude Code: index `~/.claude/projects` transcripts (deduplicated by message ID, grouped by prompt ID, subagents kept separate), with a Claude Code plugin manifest and marketplace under `.claude-plugin/`.
 - Estimate Claude Code cost in USD at Anthropic API list prices, including 5-minute and 1-hour cache writes, shown in a new cache-writes column.
 - Add `--claude-logs` and `--no-claude`. Claude Code-only installs keep the index in `~/.claude/gauge`.
 - Update the bundled skill for Claude Code session IDs and MCP diagnostics.
+- Dashboard snapshot mode: when the host renders the dashboard but cannot forward its own tool calls (`MCP error -32603: IPC not available for MCP tool call` in the Claude desktop Code tab, anthropics/claude-code#106708), stop auto-refresh and explain how to get new readings instead of repeating the error. Other refresh failures still retry.
+- Document the Code-tab bug and the `claude_desktop_config.json` workaround in the README and the bundled skill.
 
 ## 0.1.2 — 2026-11-16
 

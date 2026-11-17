@@ -1,5 +1,13 @@
 # Release validation
 
+## 0.2.0 — 2026-11-17
+
+- All 29 Python tests passed on Windows / Python 3.13; UI syntax checks, all six JavaScript test files and the 0.2.0 UI build passed.
+- The extracted plugin passed locked installation, Codex and Claude Code manifest launch, MCP UI resource loading, verified usage and live refresh.
+- Claude desktop Code tab on Windows: with Gauge started by the plugin, the dashboard opened and its own refresh calls failed with `IPC not available` (anthropics/claude-code#106708), which switches it to snapshot mode. With Gauge started from `claude_desktop_config.json`, automatic refresh worked.
+- Publication requires the six Windows/macOS/Linux Python 3.11/3.13 [CI jobs](https://github.com/alstomli/Gauge/actions/workflows/ci.yml) to pass. Release artifacts are built by CI and checked against the release commit and checksums before publication.
+- Codex desktop rendering of 0.2.0 and native macOS/Linux desktop rendering remain unverified. See [Gauge 0.2.0](https://github.com/alstomli/Gauge/releases/tag/v0.2.0) for the published assets.
+
 ## 0.1.2 — 2026-11-16
 
 - All 21 Python tests passed on Windows / Python 3.13; UI syntax checks, all five JavaScript test files and the 0.1.2 UI build passed.

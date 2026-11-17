@@ -1,7 +1,7 @@
 {
   "$schema": "https://agent-plugins.org/schemas/1.0.0/plugin.schema.json",
   "name": "gauge",
-  "version": "0.1.2",
+  "version": "0.2.0",
   "description": "Codex only: local token usage, prompt-cache reuse and estimated credits. ChatGPT conversations are not supported.",
   "author": {"name": "zihan", "url": "https://github.com/alstomli"},
   "repository": "https://github.com/alstomli/Gauge",

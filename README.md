@@ -113,10 +113,10 @@ Reload or restart the host to load the updated tools and bundled skill. If Windo
 <details>
 <summary>Optional: pin a specific release</summary>
 
-A new installation can pin release `v0.1.2` instead of following `main`:
+A new installation can pin release `v0.2.0` instead of following `main`:
 
 ```sh
-codex plugin marketplace add alstomli/Gauge --ref v0.1.2
+codex plugin marketplace add alstomli/Gauge --ref v0.2.0
 codex plugin add gauge@gauge-tools
 ```
 
@@ -124,7 +124,7 @@ A tag-pinned source stays on that tag until you change its reference. To replace
 
 ```sh
 codex plugin marketplace remove gauge-tools
-codex plugin marketplace add alstomli/Gauge --ref v0.1.2
+codex plugin marketplace add alstomli/Gauge --ref v0.2.0
 codex plugin add gauge@gauge-tools
 ```
 
@@ -138,7 +138,7 @@ Uninstalling retains usage data. See [PRIVACY.md](PRIVACY.md) for deliberate dat
 
 ## Troubleshooting
 
-**“Gauge's tools are unavailable.”** Start with the conversation type. Gauge currently supports local Codex chats only; open one and ask “Open Gauge for this chat.” Installing dependencies or reconnecting does not add ChatGPT conversation support.
+**“Gauge's tools are unavailable.”** Start with the conversation type. Gauge supports Claude Code sessions and local Codex chats; open one and ask “Open Gauge for this chat.” Installing dependencies or reconnecting does not add ChatGPT conversation support.
 
 In a Codex chat, check `uv --version`. A missing uv executable prevents the MCP server from starting, but an unavailable-tools message alone does not establish the cause. Use [Astral's installation instructions](https://docs.astral.sh/uv/getting-started/installation/) if needed, then fully quit and reopen the desktop app. If uv works in a terminal, inspect the MCP startup error: the host may have inherited a different PATH, or dependency setup may have failed.
 
@@ -213,7 +213,7 @@ claude mcp add --scope user cache-monitor -- uv run --locked --no-dev --project 
 
 On Windows, use a path such as `C:/Tools/Gauge`. For clients accepting JSON settings, `uv run --locked gauge config` prints a configuration using that environment's Python interpreter.
 
-For a release ZIP, extract it, run `uv sync --locked` in that folder, then use the same registration command. A wheel can be installed with `python -m pip install /path/to/codex_cache_monitor-0.1.2-py3-none-any.whl`. Dependencies must be downloadable unless cached. To update a checkout, stop/reload the connection, pull the desired release, run `uv sync --locked`, then reconnect.
+For a release ZIP, extract it, run `uv sync --locked` in that folder, then use the same registration command. A wheel can be installed with `python -m pip install /path/to/codex_cache_monitor-0.2.0-py3-none-any.whl`. Dependencies must be downloadable unless cached. To update a checkout, stop/reload the connection, pull the desired release, run `uv sync --locked`, then reconnect.
 
 ### Tools and compatibility names
 
