@@ -40,6 +40,8 @@ class ReleaseTest(unittest.TestCase):
         for field in ('logo', 'composerIcon'):
             asset = (plugin_root / plugin['extensions']['com.openai']['interface'][field]).resolve()
             self.assertTrue(asset.is_relative_to(plugin_root) and asset.is_file())
+        onboarding = (plugin_root / plugin['extensions']['com.openai']['onboardingSkill']).resolve()
+        self.assertTrue(onboarding.is_relative_to(plugin_root / 'skills') and onboarding.is_file())
 
     def test_archive_excludes_private_data_and_verifies_each_file(self):
         with tempfile.TemporaryDirectory() as temp:
@@ -48,7 +50,12 @@ class ReleaseTest(unittest.TestCase):
             with zipfile.ZipFile(archive) as bundle:
                 names = set(bundle.namelist())
                 self.assertTrue({'plugin.json', 'mcp.json', 'uv.lock', 'LICENSE',
-                                 '.agents/plugins/marketplace.json', 'cache_monitor/web/mcp-app.html'} <= names)
+                                 '.agents/plugins/marketplace.json', 'cache_monitor/web/mcp-app.html',
+                                 'docs/screenshots/gauge-dark.png', 'docs/screenshots/gauge-light.png',
+                                 'scripts/screenshot_preview.mjs'} <= names)
+                plugin = json.loads(bundle.read('plugin.json'))
+                onboarding = plugin['extensions']['com.openai']['onboardingSkill'].removeprefix('./')
+                self.assertIn(onboarding, names)
                 for name in names:
                     self.assertFalse(Path(name).is_absolute())
                     self.assertFalse(set(Path(name).parts) & {'.monitor', '.codex', '.venv', 'node_modules', '__pycache__', '.git'})

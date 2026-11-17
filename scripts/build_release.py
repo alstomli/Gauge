@@ -21,6 +21,8 @@ DIRECTORIES = {
     'ui': {'*.js', '*.css', '*.html'}, 'assets': {'*.svg'},
     'tests': {'*.py', '*.mjs'}, 'scripts': {'*.py', '*.mjs', '*.ps1', '*.sh'},
     'docs': {'*.md'}, '.github/workflows': {'*.yml'},
+    'skills/gauge': {'SKILL.md'},
+    'docs/screenshots': {'*.png'},
 }
 
 

@@ -10,6 +10,7 @@
   "extensions": {
     "com.openai": {
       "requires_local_executor": true,
+      "onboardingSkill": "./skills/gauge/SKILL.md",
       "interface": {
         "displayName": "Gauge",
         "shortDescription": "Tokens · Cache · Credits",

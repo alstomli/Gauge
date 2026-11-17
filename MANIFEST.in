@@ -7,6 +7,8 @@ recursive-include assets *.svg
 recursive-include scripts *.py *.mjs *.ps1 *.sh
 recursive-include tests *.py *.mjs
 recursive-include docs *.md
+recursive-include docs/screenshots *.png
+recursive-include skills SKILL.md
 recursive-include .github/workflows *.yml
 prune .monitor
 prune .codex

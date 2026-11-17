@@ -1,5 +1,10 @@
 # Changelog
 
+## Unreleased
+
+- Add dark/light UI screenshots using synthetic sample usage and a reproducible preview builder.
+- Bundle a Gauge opening/setup skill that diagnoses missing uv, PATH differences, and dependency startup failures when MCP tools are unavailable. Expose it through plugin setup and include it in release archives.
+
 ## 0.1.0 — 2026-11-16
 
 - Local token, prompt-cache and estimated-credit dashboard delivered as an MCP App.

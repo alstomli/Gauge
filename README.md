@@ -6,6 +6,16 @@ Gauge reads existing local logs. Collection and dashboard refresh make no model 
 
 [![Release checks](https://github.com/alstomli/Gauge/actions/workflows/ci.yml/badge.svg)](https://github.com/alstomli/Gauge/actions/workflows/ci.yml)
 
+## UI screenshots
+
+The current dashboard in dark and light themes, rendered with synthetic sample usage. These previews show the app content; desktop-host placement varies.
+
+| Dark theme | Light theme |
+| --- | --- |
+| ![Gauge dark theme with estimated credits and cache-reuse history](docs/screenshots/gauge-dark.png) | ![Gauge light theme with estimated credits and cache-reuse history](docs/screenshots/gauge-light.png) |
+
+To reproduce the sample previews, run `node scripts/screenshot_preview.mjs` after `npm ci`, then capture `.release-test/screenshot-preview/dark.html` and `light.html` in a browser at 1200 × 1300 pixels. The preview uses the production UI with a simulated MCP host and does not read local chat logs.
+
 ## Requirements and platform support
 
 - Python **3.11+**, [uv](https://docs.astral.sh/uv/getting-started/installation/), and a local Codex installation that writes compatible session logs.
@@ -14,6 +24,20 @@ Gauge reads existing local logs. Collection and dashboard refresh make no model 
 - Automated accounting, packaging and MCP launch/refresh checks pass on Windows, macOS and Linux with Python 3.11 and 3.13. Windows desktop rendering has been exercised during development; native desktop rendering on macOS/Linux is **not yet verified**. See [validation details](docs/VALIDATION.md).
 
 Install uv using its official instructions and make sure `uv --version` works. Restart the desktop app after installation so its process inherits the updated PATH. First launch may download dependencies from the package registry; subsequent refreshes stay local.
+
+### If Gauge's tools are unavailable
+
+A missing `uv` executable prevents the MCP server from starting, so the chat may only report that Gauge's tools are unavailable. That message alone does not mean the plugin needs reconnecting or reinstalling.
+
+This plugin includes a Gauge skill and a setup entry that guide startup diagnosis without needing its MCP server. In a host that loads the bundled skill, ask **"Diagnose Gauge startup"**, or run the plugin's setup action. The skill checks for uv and distinguishes an executable missing from PATH from a dependency/setup failure. Skill discovery and setup availability depend on the host; they do not replace the runtime requirement.
+
+On macOS/Linux, first check `uv --version`. If uv is not installed, use [Astral's official installer](https://docs.astral.sh/uv/getting-started/installation/):
+
+```sh
+curl -LsSf https://astral.sh/uv/install.sh | sh
+```
+
+Fully quit and reopen the desktop app after installation, then ask to open Gauge again. If uv already works in a terminal, the desktop app may have inherited a different PATH; inspect Gauge's MCP startup error before reinstalling anything.
 
 ## Install through the custom marketplace
 
