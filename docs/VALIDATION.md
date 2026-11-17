@@ -1,5 +1,23 @@
 # Release validation
 
+## 0.1.1 — 2026-11-16
+
+Local checks use synthetic usage records and disposable profiles.
+
+| Check | Result |
+| --- | --- |
+| Python tests | All 21 passed on Windows / Python 3.13, including the MCP server's advertised package version |
+| UI checks | Syntax checks and all five JavaScript test files passed; bundled HTML rebuilt for 0.1.1 |
+| Extracted plugin | Locked install, manifest launch, tool discovery, UI resource, verified usage and live refresh passed |
+| Installed wheel | Version 0.1.1 and packaged HTML verified with isolated imports |
+| Marketplace and skill | Version 0.1.1 installed in a disposable Codex home; enabled `gauge:gauge` skill discovered without errors |
+| Release artifacts | Plugin ZIP, wheel, source distribution and SHA256SUMS rebuilt; publication uses the artifacts produced by CI for the release commit |
+| Cross-platform CI | Publication requires all six Windows/macOS/Linux Python 3.11/3.13 jobs to pass; inspect the release commit's [CI run](https://github.com/alstomli/Gauge/actions/workflows/ci.yml) for the authoritative result |
+| Desktop limitations | macOS/Linux native rendering and automatic selection of the troubleshooting skill remain unverified; skill registration does not guarantee automatic invocation |
+| GitHub release | [Gauge 0.1.1](https://github.com/alstomli/Gauge/releases/tag/v0.1.1) |
+
+## 0.1.0
+
 Date: 2026-11-16. Version: Gauge 0.1.0. Local tests use synthetic logs and disposable profiles.
 
 | Check | Result |

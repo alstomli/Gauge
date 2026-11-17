@@ -9,6 +9,7 @@ from mcp.server.lowlevel.helper_types import ReadResourceContents
 from mcp.server.models import InitializationOptions
 from mcp.server.stdio import stdio_server
 
+from . import __version__
 from .service import Monitor
 
 WEB = Path(__file__).parent / "web"
@@ -117,7 +118,7 @@ async def run(monitor: Monitor):
     server = create_server(monitor)
     async with stdio_server() as (read, write):
         await server.run(read, write, InitializationOptions(
-            server_name="gauge", server_version="0.1.0",
+            server_name="gauge", server_version=__version__,
             capabilities=types.ServerCapabilities(
                 tools=types.ToolsCapability(listChanged=False), resources=types.ResourcesCapability(),
                 extensions={"io.modelcontextprotocol/ui": {"mimeTypes": [MIME]}},

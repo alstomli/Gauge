@@ -7,6 +7,7 @@ import unittest
 from datetime import timedelta
 from pathlib import Path
 
+from cache_monitor import __version__
 from cache_monitor.collector import Collector
 from cache_monitor.service import Monitor
 from cache_monitor.store import Store
@@ -350,6 +351,7 @@ class MCPTest(unittest.IsolatedAsyncioTestCase):
                 async with ClientSession(read,write,read_timeout_seconds=timedelta(seconds=10)) as client:
                     initialized=await client.initialize()
                     self.assertEqual(initialized.serverInfo.name, 'gauge')
+                    self.assertEqual(initialized.serverInfo.version, __version__)
                     self.assertIn('io.modelcontextprotocol/ui',initialized.capabilities.model_extra['extensions'])
                     listed=await client.list_tools()
                     tool=next(t for t in listed.tools if t.name=='show_cache_dashboard')

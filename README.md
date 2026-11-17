@@ -54,7 +54,7 @@ Reload/restart the desktop host as needed to discover the newly installed MCP to
 
 > Open Gauge for this chat.
 
-To pin a release instead of following the default branch, add the marketplace with `--ref v0.1.0`. Do not enable both the plugin and a separately configured copy of the same MCP server. Existing installations can keep the `cache-monitor` connection key and tool names.
+To pin a release instead of following the default branch, add the marketplace with `--ref v0.1.1`. Do not enable both the plugin and a separately configured copy of the same MCP server. Existing installations can keep the `cache-monitor` connection key and tool names.
 
 ## Install directly from source
 
@@ -75,7 +75,7 @@ codex mcp add cache-monitor -- uv run --locked --no-dev --project "/absolute/pat
 
 On Windows, replace the example path with a path such as `C:/Tools/Gauge`. Alternatively, configure the equivalent stdio command in your MCP client's settings. `uv run --locked gauge config` prints JSON settings using that environment's Python interpreter for clients accepting JSON configuration. Launching `gauge mcp` in a terminal waits for MCP messages on stdin; it is not an interactive web server.
 
-For an already-downloaded release ZIP, extract it, open a terminal in that folder, run `uv sync --locked`, then use the same registration command. A Python wheel can be installed with `python -m pip install /path/to/codex_cache_monitor-0.1.0-py3-none-any.whl`; the `gauge` and legacy `cache-monitor` entry points are equivalent. Dependencies still need to be downloadable unless already cached.
+For an already-downloaded release ZIP, extract it, open a terminal in that folder, run `uv sync --locked`, then use the same registration command. A Python wheel can be installed with `python -m pip install /path/to/codex_cache_monitor-0.1.1-py3-none-any.whl`; the `gauge` and legacy `cache-monitor` entry points are equivalent. Dependencies still need to be downloadable unless already cached.
 
 ## Use the dashboard
 
@@ -130,6 +130,16 @@ codex plugin add gauge@gauge-tools
 ```
 
 A tag-pinned source stays pinned until you change its reference. For a direct checkout, stop/reload the connection, pull the desired release, and run `uv sync --locked` before reconnecting.
+
+To move an existing tag-pinned marketplace to 0.1.1, replace its source reference and reinstall:
+
+```sh
+codex plugin marketplace remove gauge-tools
+codex plugin marketplace add alstomli/Gauge --ref v0.1.1
+codex plugin add gauge@gauge-tools
+```
+
+Fully quit the desktop host before replacing plugin files if Windows reports that its cache is in use. Reopen it after installation to load the new tools and bundled skill.
 
 For a marketplace uninstall, remove Gauge in the plugin UI or run `codex plugin remove gauge@gauge-tools`. For a separately registered MCP connection, run `codex mcp remove cache-monitor`. Remove the custom marketplace source separately with `codex plugin marketplace remove gauge-tools` if desired. These operations retain usage data. See [PRIVACY.md](PRIVACY.md) for deliberate deletion of Gauge's database; never delete the entire Codex home.
 

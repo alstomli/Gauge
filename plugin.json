@@ -1,7 +1,7 @@
 {
   "$schema": "https://agent-plugins.org/schemas/1.0.0/plugin.schema.json",
   "name": "gauge",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "Local Codex token usage, prompt-cache reuse and estimated credits in an embedded dashboard.",
   "author": {"name": "zihan", "url": "https://github.com/alstomli"},
   "repository": "https://github.com/alstomli/Gauge",

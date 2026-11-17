@@ -226,7 +226,7 @@ $('appearance').addEventListener('click',()=>{darkAppearance=!darkAppearance;app
 applyAppearance();
 
 async function start() {
-    app = new App({name:'Gauge',version:'0.1.0'}, {availableDisplayModes:['fullscreen']}, {autoResize:true});
+    app = new App({name:'Gauge',version:'0.1.1'}, {availableDisplayModes:['fullscreen']}, {autoResize:true});
     sidePanel = createSidePanel(app, state => {
       $('display-note').textContent = state.message;
       $('display-note').hidden = !state.message;
