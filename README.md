@@ -146,6 +146,23 @@ The plugin bundles a Gauge skill and setup entry that can guide startup diagnosi
 
 **The panel is empty or totals look incomplete.** Gauge waits for completed calls in the selected chat's compatible local logs. Check that the chat has recorded usage and the configured log directory is available. Cloud-only calls, other devices and separate agent chats do not enter this chat's totals. See the limits below before comparing against account-wide usage.
 
+**The dashboard says “Auto refresh unavailable” or “IPC not available” in the Claude desktop Code tab.** The dashboard opens, but its own refresh calls fail with `MCP error -32603: IPC not available for MCP tool call`. This is a known Claude desktop bug ([anthropics/claude-code#106708](https://github.com/anthropics/claude-code/issues/106708)): when Claude Code starts an MCP server, from a plugin or `claude mcp add`, the Code tab does not forward a dashboard's tool calls to it. Gauge then switches to snapshot mode. Asking Claude to open Gauge again still shows current readings.
+
+For automatic refresh, let the desktop app start Gauge instead. In Claude desktop, open **Settings → Developer → Edit Config** and add Gauge to `mcpServers` in `claude_desktop_config.json`, using absolute paths:
+
+```json
+{
+  "mcpServers": {
+    "gauge": {
+      "command": "/absolute/path/to/uv",
+      "args": ["run", "--locked", "--no-dev", "--project", "/absolute/path/to/Gauge", "gauge", "mcp"]
+    }
+  }
+}
+```
+
+Keep the file's other settings. Fully quit and reopen the desktop app, then ask Claude to open Gauge with the `gauge` server's tools. If the plugin is also installed, its `cache-monitor` tools stay available but its dashboard still cannot refresh in the Code tab. Remove the entry once the bug is fixed.
+
 **The server appears to hang in a terminal.** `gauge mcp` waits for MCP messages on stdin; it is not an interactive web server. For a source-install launch check, use `uv run --locked gauge --version`.
 
 ## Local data and privacy

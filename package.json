@@ -5,8 +5,8 @@
   "type": "module",
   "scripts": {
     "build": "node scripts/build.mjs",
-    "check": "node --check ui/app.js && node --check ui/credit-counter.js && node --check ui/credits.js && node --check ui/chart.js && node --check ui/format.js && node --check ui/presentation.js && node --check scripts/build.mjs",
-    "test": "node --test tests/presentation.test.mjs tests/format.test.mjs tests/chart.test.mjs tests/credits.test.mjs tests/credit-counter.test.mjs"
+    "check": "node --check ui/app.js && node --check ui/credit-counter.js && node --check ui/credits.js && node --check ui/chart.js && node --check ui/format.js && node --check ui/presentation.js && node --check ui/host-calls.js && node --check scripts/build.mjs",
+    "test": "node --test tests/presentation.test.mjs tests/format.test.mjs tests/chart.test.mjs tests/credits.test.mjs tests/credit-counter.test.mjs tests/host-calls.test.mjs"
   },
   "dependencies": {
     "@modelcontextprotocol/ext-apps": "1.1.2"

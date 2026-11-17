@@ -35,6 +35,14 @@ Discover Gauge's `show_cache_dashboard` tool and call it with the current chat's
 
 Hosts that support MCP Apps render the dashboard. Where the host shows only the tool's text (for example the Claude Code terminal), report that text: cache reuse, cached and total input tokens, cache writes and completed calls. For per-prompt or per-model detail, call `get_cache_history` or `get_cache_summary` with the same ID. For Claude Code, cost figures are API-equivalent list prices, not what a subscription bills.
 
+### Dashboard refresh fails in the Claude desktop Code tab
+
+If the dashboard reports `MCP error -32603: IPC not available for MCP tool call`, or "Auto refresh unavailable", the server is running and the dashboard reached the desktop app; the app could not forward the dashboard's own tool calls. This is a known Claude desktop bug (anthropics/claude-code#106708) for MCP servers that Claude Code starts, including this plugin. Do not suggest reinstalling Gauge or installing uv for it.
+
+- Explain that calling `show_cache_dashboard` again from the conversation still returns current readings.
+- For automatic refresh, the user can add Gauge to the desktop app's own `claude_desktop_config.json` (Claude desktop: **Settings → Developer → Edit Config**) under `mcpServers`, with `command` set to the absolute uv path and `args` `["run", "--locked", "--no-dev", "--project", "<absolute Gauge root>", "gauge", "mcp"]`, then fully quit and reopen the app. That file holds other app settings, so add the entry without replacing them, and change it only with the user's approval.
+- When both this plugin's tools and a desktop-config Gauge server's tools are available in the Code tab, open the dashboard with the desktop-config server's `show_cache_dashboard`.
+
 If Gauge's tools are unavailable, perform the startup checks below before suggesting a reconnect or reinstall. An empty plugin search is not evidence that a local plugin is absent.
 
 ## Setup or unavailable tools
