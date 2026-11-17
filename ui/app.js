@@ -4,6 +4,7 @@ import { formatReuse } from './format.js';
 import { reuseScale, axisPercent } from './chart.js';
 import { pricingFor, rateFor, estimateCredits, wholeChatModelUsage } from './credits.js';
 import { createCreditCounter } from './credit-counter.js';
+import { isHostCallUnavailable, SNAPSHOT_MESSAGE } from './host-calls.js';
 
 const $ = id => document.getElementById(id);
 const number = n => new Intl.NumberFormat().format(n);
@@ -14,6 +15,8 @@ const isInternal = session => session?.session_kind === 'internal_review';
 let app, snapshot, selected = '';
 let limit = 500, auto = true, busy = false, generation = 0, lastSuccess;
 let followAllCalls = false;
+// Snapshot only: the host renders the dashboard but cannot proxy its tool calls.
+let snapshotOnly = false;
 let sidePanel;
 const creditNumber = new Intl.NumberFormat(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2});
 const motionPreference = window.matchMedia('(prefers-reduced-motion: reduce)');
@@ -25,6 +28,19 @@ let creditCache, creditLoadingKey = '', creditError;
 
 function showError(message) { $('error').textContent = message; $('error').hidden = !message; }
 function announce(message) { $('announcement').textContent = message; }
+function enterSnapshotMode() {
+  if (snapshotOnly) return;
+  snapshotOnly = true; auto = false;
+  clearInterval(refreshTimer);
+  $('auto').textContent = 'Auto refresh unavailable';
+  $('auto').setAttribute('aria-pressed', 'false');
+  $('auto').disabled = true;
+  $('host-note').textContent = SNAPSHOT_MESSAGE;
+  $('host-note').hidden = false;
+  showError('');
+  render();
+  announce('Automatic refresh is unavailable in this app.');
+}
 function base(summary) { return `${number(summary.cached_input_tokens)} cached / ${number(summary.input_tokens)} input tokens`; }
 function bindChat(id) {
   if (typeof id !== 'string' || !id.trim()) throw new Error('Open the monitor with the current chat ID.');
@@ -40,7 +56,7 @@ function decode(result) {
   return value;
 }
 async function refresh(manual = false) {
-  if (busy || !selected) return;
+  if (busy || !selected || snapshotOnly) return;
   busy = true;
   const requestGeneration = generation, requestSession = selected;
   try {
@@ -51,6 +67,7 @@ async function refresh(manual = false) {
     snapshot = result; lastSuccess = new Date(); showError(''); render();
     if (manual) announce('Cache usage updated.');
   } catch(error) {
+    if (isHostCallUnavailable(error)) { enterSnapshotMode(); return; }
     showError(`Refresh failed. Previous readings are retained. ${error.message}`);
     $('connection').textContent = 'Disconnected';
   } finally { busy = false; }
@@ -59,7 +76,7 @@ async function refresh(manual = false) {
 function render() {
   if (!snapshot) return;
   const {detail, collector} = snapshot;
-  $('connection').textContent = collector.error ? 'Collector needs attention' : `MCP App · ${auto ? 'auto refresh' : 'paused'}`;
+  $('connection').textContent = collector.error ? 'Collector needs attention' : `MCP App · ${snapshotOnly ? 'snapshot' : auto ? 'auto refresh' : 'paused'}`;
   $('detail').hidden = !detail;
   $('empty').hidden = Boolean(detail);
   if (detail) renderDetail(detail);
@@ -175,6 +192,10 @@ async function loadWholeChatCreditUsage(detail) {
     creditError = null;
     if (snapshot?.detail && creditUsageKey(snapshot.detail) === creditCache.key) renderCredits(snapshot.detail);
   } catch (error) {
+    if (isHostCallUnavailable(error)) {
+      enterSnapshotMode();
+      error = Object.assign(new Error('Whole-chat pricing needs host tool calls, which this app does not support.'), {permanent: true});
+    }
     creditError = {key, message: error.message, retryAt: error.permanent ? Infinity : Date.now() + 10_000};
     if (snapshot?.detail && creditUsageKey(snapshot.detail) === key) renderCredits(snapshot.detail);
   } finally {if (creditLoadingKey === key) creditLoadingKey = '';}
