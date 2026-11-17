@@ -29,6 +29,17 @@ def append(path, records):
             handle.write(json.dumps(item).encode() + b'\n')
 
 
+def claude_turn(sid, message_id, second):
+    usage = {'input_tokens': 10, 'cache_read_input_tokens': 900, 'cache_creation_input_tokens': 90, 'output_tokens': 20,
+             'cache_creation': {'ephemeral_5m_input_tokens': 0, 'ephemeral_1h_input_tokens': 90}}
+    common = {'sessionId': sid, 'cwd': 'synthetic-project', 'version': 'test', 'isSidechain': False,
+              'timestamp': f'2026-11-16T12:00:{second:02d}Z'}
+    return [{**common, 'type': 'user', 'promptId': 'release-prompt', 'message': {'role': 'user', 'content': 'synthetic'}},
+            *({**common, 'type': 'assistant', 'requestId': 'req-' + message_id,
+               'message': {'id': message_id, 'model': 'claude-opus-5-5', 'role': 'assistant',
+                           'content': [{'type': block}], 'usage': usage}} for block in ('thinking', 'text'))]
+
+
 def call(rid, inputs, cached, output, total, second, sid='release-chat'):
     return record('token_usage_record', {
         'thread_id': sid, 'response_id': rid, 'turn_id': 'release-turn',
@@ -52,7 +63,7 @@ async def smoke(archive: Path):
                 assert (plugin / name).resolve().is_relative_to(plugin.resolve())
                 assert hashlib.sha256(bundle.read(name)).hexdigest() == digest
             bundle.extractall(plugin)
-        env = {**os.environ, 'CODEX_HOME': str(base / 'codex')}
+        env = {**os.environ, 'CODEX_HOME': str(base / 'codex'), 'CLAUDE_CONFIG_DIR': str(base / 'claude')}
         env.pop('GAUGE_DATABASE', None)
         # Pin this check to the selected CI interpreter, not an unrelated system Python.
         subprocess.run([uv, 'sync', '--locked', '--no-dev', '--project', str(plugin),
@@ -94,9 +105,30 @@ async def smoke(archive: Path):
                     await asyncio.sleep(.1)
                 assert detail['summary']['input_tokens'] == 1100
                 assert detail['quality']['status'] == 'verified'
+        # Claude Code launches the same server from its own manifest.
+        transcript = base / 'claude' / 'projects' / 'synthetic-project' / 'release-session.jsonl'
+        transcript.parent.mkdir(parents=True)
+        append(transcript, claude_turn('release-session', 'msg-1', 3))
+        claude_server, = json.loads((plugin / '.claude-plugin' / 'plugin.json').read_text())['mcpServers'].values()
+        args = [arg.replace('${CLAUDE_PLUGIN_ROOT}', str(plugin)) for arg in claude_server['args']]
+        assert claude_server['command'] == 'uv' and str(plugin) in args
+        async with stdio_client(StdioServerParameters(command=uv, args=args, cwd=str(plugin), env=env)) as (read, write):
+            async with ClientSession(read, write, read_timeout_seconds=timedelta(seconds=30)) as client:
+                await client.initialize()
+                for _ in range(40):
+                    shown = await client.call_tool('show_cache_dashboard', {'session_id': 'release-session'})
+                    detail = shown.meta['dashboard']['detail']
+                    if detail:
+                        break
+                    await asyncio.sleep(.1)
+                assert detail['session']['provider'] == 'claude'
+                assert detail['summary']['calls'] == 1  # split records are one call
+                assert detail['summary']['input_tokens'] == 1000
+                assert detail['summary']['cached_input_tokens'] == 900
+                assert detail['summary']['cache_write_1h_tokens'] == 90
         assert (base / 'codex' / 'gauge' / 'usage.sqlite3').is_file()
         assert not list(plugin.glob('**/*.sqlite3'))
-    print('Extracted plugin passed: locked install, manifest launch, MCP UI resource, verified usage and live refresh.')
+    print('Extracted plugin passed: locked install, Codex and Claude Code manifest launch, MCP UI resource, verified usage and live refresh.')
 
 
 if __name__ == '__main__':

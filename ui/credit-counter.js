@@ -1,6 +1,6 @@
 // Share one animation clock so the credit breakdown and total rise together.
 export function createCreditCounter(elements, {
-  format, duration = 700, reduceMotion = () => false,
+  format, duration = 700, reduceMotion = () => false, unit = () => 'credits',
   requestFrame = callback => requestAnimationFrame(callback),
   cancelFrame = id => cancelAnimationFrame(id), now = () => performance.now(),
 } = {}) {
@@ -42,7 +42,7 @@ export function createCreditCounter(elements, {
       return;
     }
     stop();prefix = nextPrefix;target = {...values};
-    for (const key of keys) elements[key].title = `${prefix}${format(target[key])} credits`;
+    for (const key of keys) elements[key].title = `${prefix}${format(target[key])} ${unit()}`;
     from = shown ? {...shown} : Object.fromEntries(keys.map(key => [key, 0]));
     // Corrections and reduced-motion updates settle immediately, never counting
     // upward to a value that is actually lower than the previous reading.

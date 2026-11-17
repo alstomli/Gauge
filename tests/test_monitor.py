@@ -346,7 +346,7 @@ class MCPTest(unittest.IsolatedAsyncioTestCase):
             review=meta('review-1');review['payload']['thread_source']='guardian_review'
             append(logs/'review.jsonl',[review,response(sid='review-1')])
             append(logs/'other.jsonl',[meta('other-chat'),response(sid='other-chat')])
-            params=StdioServerParameters(command=sys.executable,args=['-m','cache_monitor','mcp','--logs',str(logs),'--database',str(base/'usage.sqlite3')],cwd=str(Path(__file__).parents[1]))
+            params=StdioServerParameters(command=sys.executable,args=['-m','cache_monitor','mcp','--logs',str(logs),'--no-claude','--database',str(base/'usage.sqlite3')],cwd=str(Path(__file__).parents[1]))
             async with stdio_client(params) as (read,write):
                 async with ClientSession(read,write,read_timeout_seconds=timedelta(seconds=10)) as client:
                     initialized=await client.initialize()

@@ -66,7 +66,8 @@ label { display: flex; flex-direction: column; gap: 6px; font-size: 11px; color:
 .credit-total { display: flex; flex-wrap: wrap; align-items: baseline; gap: 8px; color: var(--accent); }
 #credits-total { font-size: 34px; font-weight: 500; line-height: 1.2; letter-spacing: -.04em; font-variant-numeric: tabular-nums; }
 .credit-unit { font-size: 12px; color: var(--muted); }
-.credit-breakdown { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 15px; margin-bottom: 15px; }
+.credit-breakdown { display: grid; grid-auto-flow: column; grid-auto-columns: minmax(0, 1fr); gap: 15px; margin-bottom: 15px; }
+.credit-part[hidden] { display: none; }
 .credit-part { min-width: 0; border-left: 1px solid var(--line); padding-left: 14px; }
 .credit-part:first-child { border-left: 0; padding-left: 0; }
 .credit-part h3 { font-size: 12px; font-weight: 400; color: var(--muted); margin: 0 0 5px; }
@@ -157,11 +158,13 @@ footer { display: flex; justify-content: space-between; flex-wrap: wrap; gap: 8p
   .chart-panel { padding: 14px 10px 2px; }
   .credit-panel { padding: 16px; }
   .credit-breakdown { gap: 10px; }
+  .credit-breakdown:has(> #credits-write-part:not([hidden])) { grid-auto-flow: row; grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .credit-breakdown:has(> #credits-write-part:not([hidden])) > .credit-part:nth-child(3) { border-left: 0; padding-left: 0; }
   .credit-part { padding-left: 10px; }
   .credit-value { font-size: 21px; }
 }
 @media (max-width: 380px) {
-  .credit-breakdown { grid-template-columns: 1fr; gap: 11px; }
+  .credit-breakdown, .credit-breakdown:has(> #credits-write-part:not([hidden])) { grid-auto-flow: row; grid-template-columns: 1fr; gap: 11px; }
   .credit-part { display: grid; grid-template-columns: 1fr auto; border-left: 0; border-top: 1px solid var(--line); padding: 10px 0 0; }
   .credit-part:first-child { border-top: 0; padding-top: 0; }
   .credit-part .credit-value { grid-column: 2; grid-row: 1 / 3; align-self: center; }

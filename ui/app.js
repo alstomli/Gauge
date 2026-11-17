@@ -2,7 +2,7 @@ import { App } from '@modelcontextprotocol/ext-apps';
 import { createSidePanel } from './presentation.js';
 import { formatReuse } from './format.js';
 import { reuseScale, axisPercent } from './chart.js';
-import { CREDIT_RATES, PRICING_SOURCE, PRICING_CHECKED, estimateCredits, wholeChatModelUsage } from './credits.js';
+import { pricingFor, rateFor, estimateCredits, wholeChatModelUsage } from './credits.js';
 import { createCreditCounter } from './credit-counter.js';
 
 const $ = id => document.getElementById(id);
@@ -17,9 +17,10 @@ let followAllCalls = false;
 let sidePanel;
 const creditNumber = new Intl.NumberFormat(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2});
 const motionPreference = window.matchMedia('(prefers-reduced-motion: reduce)');
+let pricing = pricingFor('codex');
 const creditCounter = createCreditCounter({
-  total: $('credits-total'), input: $('credits-input'), cached: $('credits-cached'), output: $('credits-output'),
-}, {format: value => creditNumber.format(value), reduceMotion: () => motionPreference.matches || document.hidden});
+  total: $('credits-total'), input: $('credits-input'), cached: $('credits-cached'), write: $('credits-write'), output: $('credits-output'),
+}, {format: value => creditNumber.format(value), reduceMotion: () => motionPreference.matches || document.hidden, unit: () => pricing.unit});
 let creditCache, creditLoadingKey = '', creditError;
 
 function showError(message) { $('error').textContent = message; $('error').hidden = !message; }
@@ -107,11 +108,24 @@ function creditUsageKey(detail) {
     detail.summary.cached_input_tokens, detail.summary.output_tokens]);
 }
 
+function applyPricing(provider) {
+  const next = pricingFor(provider);
+  if (next === pricing) return;
+  pricing = next;
+  $('credits-title').textContent = pricing.title;
+  $('credits-unit').textContent = pricing.unit;
+  $('credits-checked').textContent = `Rates checked ${pricing.checked}`;
+}
+
 function renderCredits(detail) {
   const summary = detail.summary, key = creditUsageKey(detail);
+  applyPricing(detail.session.provider);
+  const written = (summary.cache_write_5m_tokens ?? 0) + (summary.cache_write_1h_tokens ?? 0);
+  $('credits-write-part').hidden = detail.session.provider !== 'claude';
+  $('credits-write-tokens').textContent = `${number(written)} tokens`;
   if (creditError?.key === key && Date.now() >= creditError.retryAt) creditError = null;
   const groups = wholeChatModelUsage(detail) || (creditCache?.key === key ? creditCache.groups : null);
-  $('credits-input-tokens').textContent = `${number(summary.input_tokens - summary.cached_input_tokens)} tokens`;
+  $('credits-input-tokens').textContent = `${number(summary.input_tokens - summary.cached_input_tokens - written)} tokens`;
   $('credits-cached-tokens').textContent = `${number(summary.cached_input_tokens)} tokens`;
   $('credits-output-tokens').textContent = `${number(summary.output_tokens)} tokens`;
   if (!groups) {
@@ -122,16 +136,17 @@ function renderCredits(detail) {
     if (creditLoadingKey !== key && creditError?.key !== key) void loadWholeChatCreditUsage(detail);
     return;
   }
-  const estimate = estimateCredits(groups);
-  creditCounter.update({total: estimate.total, input: estimate.input, cached: estimate.cached, output: estimate.output},
+  const estimate = estimateCredits(groups, pricing.rates);
+  creditCounter.update({total: estimate.total, input: estimate.input, cached: estimate.cached, write: estimate.write, output: estimate.output},
     {partial: !estimate.complete, available: estimate.pricedCalls > 0 || estimate.complete});
   $('credit-panel').dataset.partial = String(!estimate.complete);
   $('credits-coverage').textContent = estimate.complete
     ? `${number(summary.calls)} completed calls · Standard-rate estimate`
     : `Partial estimate · ${number(estimate.pricedCalls)} of ${number(summary.calls)} calls priced. Unpriced: ${estimate.unpricedModels.join(', ')}.`;
   $('credits-rates').textContent = groups.map(group => {
-    const rate = Object.hasOwn(CREDIT_RATES, group.model) ? CREDIT_RATES[group.model] : null;
-    return rate ? `${group.model}: fresh ${rate.input} / cached ${rate.cached} / output ${rate.output} credits per 1M tokens`
+    const rate = rateFor(group.model, pricing.rates);
+    const writes = rate?.write5m !== undefined ? ` / cache write ${rate.write5m} (5m), ${rate.write1h} (1h)` : '';
+    return rate ? `${group.model}: fresh ${rate.input} / cached ${rate.cached}${writes} / output ${rate.output} ${pricing.unit} per 1M tokens`
       : `${group.model || 'Model unavailable'}: no published rate in this estimate`;
   }).join('\n');
 }
@@ -191,10 +206,10 @@ $('limit').addEventListener('input', event => {
   limit = Number(event.target.value);
   if (snapshot?.detail) renderHistory(snapshot.detail);
 });
-$('credits-checked').textContent = `Rates checked ${PRICING_CHECKED}`;
+$('credits-checked').textContent = `Rates checked ${pricing.checked}`;
 $('credits-source').addEventListener('click', async () => {
   try {
-    const result = await app.openLink({url: PRICING_SOURCE});
+    const result = await app.openLink({url: pricing.source});
     if (result?.isError) throw new Error('The host could not open the pricing page.');
   } catch(error) {showError(error.message);}
 });

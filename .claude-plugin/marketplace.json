@@ -1,0 +1,13 @@
+{
+  "name": "gauge-tools",
+  "owner": {"name": "zihan", "url": "https://github.com/alstomli"},
+  "plugins": [
+    {
+      "name": "gauge",
+      "source": "./",
+      "description": "Local token usage, prompt-cache reuse and API-equivalent cost estimates for Claude Code sessions.",
+      "version": "0.1.2",
+      "category": "Developer Tools"
+    }
+  ]
+}

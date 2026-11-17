@@ -6,7 +6,7 @@
   </picture>
 </h1>
 
-<h3 align="center">Token usage, cache reuse, and credit estimates for Codex</h3>
+<h3 align="center">Token usage, cache reuse, and cost estimates for Claude Code and Codex</h3>
 
 <p align="center"><strong>Tokens · Cache · Credits</strong></p>
 
@@ -14,7 +14,7 @@
   <a href="https://github.com/alstomli/Gauge/actions/workflows/ci.yml"><img src="https://github.com/alstomli/Gauge/actions/workflows/ci.yml/badge.svg" alt="Release checks"></a>
   <a href="https://github.com/alstomli/Gauge/releases/latest"><img src="https://img.shields.io/github/v/release/alstomli/Gauge?color=176B59&amp;label=release" alt="Latest release"></a>
   <a href="#quick-start"><img src="https://img.shields.io/badge/Python-3.11%2B-3776AB?logo=python&amp;logoColor=white" alt="Python 3.11 or newer"></a>
-  <a href="#quick-start"><img src="https://img.shields.io/badge/Supports-Codex_only-176B59" alt="Codex only"></a>
+  <a href="#quick-start"><img src="https://img.shields.io/badge/Supports-Claude_Code_%7C_Codex-176B59" alt="Supports Claude Code and Codex"></a>
   <a href="LICENSE"><img src="https://img.shields.io/badge/License-MIT-176B59" alt="MIT license"></a>
 </p>
 
@@ -27,9 +27,9 @@
   <a href="CONTRIBUTING.md">Contributing</a>
 </p>
 
-> **Codex only.** Gauge does not support ChatGPT conversations on web, desktop or mobile. If your desktop app offers both ChatGPT and Codex modes, open a local chat in **Codex mode**. The app's name alone does not establish compatibility.
+> **Claude Code and local Codex chats.** Gauge reads the usage logs those tools write on your computer. ChatGPT conversations and claude.ai chats keep no such logs and are not supported. An app's name alone does not establish compatibility: use a Claude Code session or a local chat in **Codex mode**.
 
-Gauge reads existing local logs. Collection and dashboard refresh make **no model calls** and require no OpenAI API key, hosted backend or separate browser dashboard. This is an independent project, not an OpenAI product or official-directory listing.
+Gauge reads existing local logs. Collection and dashboard refresh make **no model calls** and require no API key, hosted backend or separate browser dashboard. This is an independent project, not an OpenAI or Anthropic product or official-directory listing.
 
 ## Preview
 
@@ -40,6 +40,23 @@ Dark and light themes, shown with **synthetic sample usage**, not a real convers
 | ![Gauge dark theme with estimated credits and cache-reuse history](docs/screenshots/gauge-dark.png) | ![Gauge light theme with estimated credits and cache-reuse history](docs/screenshots/gauge-light.png) |
 
 ## Quick start
+
+### Claude Code
+
+You need [uv](https://docs.astral.sh/uv/getting-started/installation/) on the PATH Claude Code inherits (check `uv --version`). Gauge runs on Python 3.11+, which uv can provision. **Node.js is not needed.**
+
+```sh
+claude plugin marketplace add alstomli/Gauge
+claude plugin install gauge@gauge-tools
+```
+
+Inside Claude Code the same commands are `/plugin marketplace add alstomli/Gauge` and `/plugin install gauge@gauge-tools`. Restart Claude Code, then ask in a session:
+
+> Open Gauge for this chat.
+
+The bundled skill passes the current session ID (`CLAUDE_CODE_SESSION_ID`). Hosts that render MCP Apps show the dashboard; the Claude Code terminal shows the tool's text summary, and you can ask for per-prompt or per-model detail. Use `/mcp` to check that the `cache-monitor` server is connected.
+
+### Codex
 
 You need:
 
@@ -75,7 +92,8 @@ The dashboard binds to the opening chat's **explicit ID**. It never silently sel
 | **Whole chat** | Token-weighted cache reuse across distinct recorded completed calls, including attempts replaced by editing a prompt |
 | **Latest model call** | Cached input divided by input for the newest completed call |
 | **Latest prompt** | Token-weighted cache reuse across calls attributed to the newest prompt with recorded usage; one prompt can cause several calls |
-| **Estimated credits** | Fresh input (`input − cached`), cached input and output priced separately at bundled per-model Standard-speed rates |
+| **Estimated credits** (Codex) | Fresh input (`input − cached`), cached input and output priced separately at bundled per-model Standard-speed rates |
+| **Estimated API cost** (Claude Code) | Fresh input, cache reads, cache writes (5-minute and 1-hour) and output priced in USD at Anthropic API list prices. A Claude subscription is not billed per token, so this is an API-equivalent figure |
 
 Use the panel controls to change the history range and dark/light appearance. The percentage axis scales automatically. Info icons explain the readings. Animated credit amounts respect reduced-motion preferences.
 
@@ -135,7 +153,8 @@ The plugin bundles a Gauge skill and setup entry that can guide startup diagnosi
 | Setting | Default | Override |
 | --- | --- | --- |
 | Codex log directory | `$CODEX_HOME/sessions`, otherwise `~/.codex/sessions` | `--logs` |
-| Gauge usage index | `$CODEX_HOME/gauge/usage.sqlite3`, otherwise `~/.codex/gauge/usage.sqlite3` | `GAUGE_DATABASE` or `--database` |
+| Claude Code transcripts | `$CLAUDE_CONFIG_DIR/projects`, otherwise `~/.claude/projects` | `--claude-logs`; `--no-claude` disables |
+| Gauge usage index | `$CODEX_HOME/gauge/usage.sqlite3`, otherwise `~/.codex/gauge/usage.sqlite3`; with no Codex home, `~/.claude/gauge/usage.sqlite3` | `GAUGE_DATABASE` or `--database` |
 
 Gauge indexes all readable local chats in that directory. The dashboard returns only its selected chat; the separate list tool can return other indexed summaries. The index stores numeric usage, IDs, timestamps, model/source metadata and local paths. It does not intentionally store prompt text, responses, tool output or credentials. Requested usage metadata is shared with the MCP host/model and follows the host's own privacy rules.
 
@@ -148,6 +167,7 @@ Older explicit database paths, including `.monitor/usage.sqlite3`, remain suppor
 Cache reuse is `sum(cached input) / sum(input)`. Cached input is already included in input; output does not enter this percentage. Zero input is unavailable, and unfinished calls have no reported usage yet.
 
 - **Recorded usage, not account-wide billing.** Only compatible, retained local logs are covered. Archives, other devices, cloud-only calls and separate agent chats are excluded from this chat's totals. Codex's internal log format can change.
+- **Claude Code transcripts.** Each model call is counted once by message ID, even when Claude Code splits it across several records. Input is the sum of uncached input, cache reads and cache writes, so cache reuse means the same as for Codex. Prompts group by Claude Code's prompt ID. Subagent calls form separate sessions. Transcripts carry no running totals, so Claude Code readings show as unreconciled rather than verified. Fast mode and long-context surcharges are excluded from cost estimates. Claude Code's transcript format can change.
 - **Completed attempts still count.** Responses are deduplicated by chat and response ID. Completed calls omitted from the surviving conversation branch still count toward spent usage. Child-agent and internal-review usage stays separate from the parent chat.
 - **Verification depends on evidence.** Each log is checked against its own resume-checkpoint lineage, including nested segment references after edits. Missing proof stays unverified; actual counter mismatches are marked degraded. For snapshot-only logs, the first cumulative value is a baseline and history is explicitly partial.
 
@@ -166,6 +186,12 @@ Register the server with your **absolute checkout path**, so it works from any p
 
 ```sh
 codex mcp add cache-monitor -- uv run --locked --no-dev --project "/absolute/path/to/Gauge" gauge mcp
+```
+
+For Claude Code:
+
+```sh
+claude mcp add --scope user cache-monitor -- uv run --locked --no-dev --project "/absolute/path/to/Gauge" gauge mcp
 ```
 
 On Windows, use a path such as `C:/Tools/Gauge`. For clients accepting JSON settings, `uv run --locked gauge config` prints a configuration using that environment's Python interpreter.

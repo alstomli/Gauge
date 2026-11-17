@@ -51,3 +51,30 @@ test('complete older payloads can be grouped, but recent slices cannot be priced
   assert.equal(empty.total, 0);
   assert.equal(empty.complete, true);
 });
+
+import {CLAUDE_RATES, pricingFor, rateFor} from '../ui/credits.js';
+
+const claudeGroup = (model = 'claude-opus-5-5', extra = {}) => ({model, calls: 1, input_tokens: 1_000_000,
+  cached_input_tokens: 500_000, cache_write_5m_tokens: 100_000, cache_write_1h_tokens: 200_000, output_tokens: 100_000, ...extra});
+const near = (actual, expected) => assert.ok(Math.abs(actual - expected) < 1e-9, `${actual} != ${expected}`);
+
+test('Claude Code calls price fresh input, cache reads, both cache-write TTLs and output in USD', () => {
+  const result = estimateCredits([claudeGroup()], CLAUDE_RATES);
+  near(result.input, .2 * 4);              // 1M - 500K read - 300K written
+  near(result.cached, .5 * .2);
+  near(result.write, .1 * 5 + .2 * 8);     // 1.25x and 2x of $4
+  near(result.output, .1 * 20);
+  near(result.total, .8 + .1 + 2.1 + 2);
+  assert.equal(result.complete, true);
+  assert.equal(pricingFor('claude').unit, 'USD');
+  assert.equal(pricingFor(undefined).unit, 'credits');
+});
+
+test('dated Claude snapshots use their alias, and writes never price without a write rate', () => {
+  assert.equal(rateFor('claude-haiku-4-5-20251001', CLAUDE_RATES), CLAUDE_RATES['claude-haiku-4-5']);
+  assert.equal(rateFor('claude-future-9', CLAUDE_RATES), null);
+  assert.equal(estimateCredits([claudeGroup('gpt-6.1-sol')]).complete, false);
+  assert.equal(estimateCredits([claudeGroup('claude-opus-5-5', {cached_input_tokens: 900_000})], CLAUDE_RATES).complete, false);
+  // Codex groups have no write fields and keep their original totals.
+  assert.equal(estimateCredits([group()]).write, 0);
+});

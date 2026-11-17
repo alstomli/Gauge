@@ -203,6 +203,7 @@ class Collector:
 
     def insert(self, sid, response, turn, timestamp, model, source, counts):
         db = self.store.db
-        db.execute("INSERT OR IGNORE INTO usage VALUES(?,?,?,?,?,?,?,?,?)",
+        db.execute("INSERT OR IGNORE INTO usage(session_id,response_id,turn_id,timestamp,model,source,"
+                   "input_tokens,cached_input_tokens,output_tokens) VALUES(?,?,?,?,?,?,?,?,?)",
                    (sid, response, turn, timestamp, model, source, *[counts[k] for k in COUNTERS]))
         db.execute("UPDATE sessions SET updated_at=MAX(updated_at,?) WHERE id=?", (timestamp, sid))

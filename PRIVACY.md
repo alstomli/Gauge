@@ -1,6 +1,6 @@
 # Privacy
 
-Gauge runs on your computer. Its collector reads Codex session JSONL files under `$CODEX_HOME/sessions`, or `~/.codex/sessions` by default. Reading a JSONL record temporarily puts that record in process memory, which can include conversation content; Gauge extracts usage metadata and does not intentionally store prompt text, responses or tool output.
+Gauge runs on your computer. Its collector reads Codex session JSONL files under `$CODEX_HOME/sessions`, or `~/.codex/sessions` by default. It also reads Claude Code transcripts under `$CLAUDE_CONFIG_DIR/projects`, or `~/.claude/projects` by default; pass `--no-claude` to skip them. Reading a JSONL record temporarily puts that record in process memory, which can include conversation content; Gauge extracts usage metadata and does not intentionally store prompt text, responses or tool output.
 
 The SQLite index stores token counts, response/chat/turn IDs, timestamps, model and source information, project and log paths, cursor state, and counter-verification metadata. It does not intentionally store credentials or account identities. The default index is `$CODEX_HOME/gauge/usage.sqlite3`, or `~/.codex/gauge/usage.sqlite3`; `GAUGE_DATABASE` or `--database` can override it. The collector indexes readable local chats, although the opened dashboard is restricted to the selected chat. The separate list tool can return summaries of other indexed chats.
 
