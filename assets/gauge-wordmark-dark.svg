@@ -1,0 +1,12 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="670" height="180" viewBox="0 0 670 180" fill="none" role="img" aria-labelledby="title">
+  <title id="title">Gauge</title>
+  <g transform="translate(30 24) scale(1.375)">
+    <rect width="96" height="96" rx="22" fill="#101923"/>
+    <path d="M23 65a30 30 0 1 1 50 0" stroke="#294252" stroke-width="7" stroke-linecap="round"/>
+    <path d="M23 65a30 30 0 0 1 48-36" stroke="#76E2C4" stroke-width="7" stroke-linecap="round"/>
+    <path d="m48 48 18-16" stroke="#E7F0F5" stroke-width="5" stroke-linecap="round"/>
+    <circle cx="48" cy="48" r="6" fill="#76E2C4"/>
+    <path d="M34 75h28" stroke="#76E2C4" stroke-width="5" stroke-linecap="round"/>
+  </g>
+  <text x="190" y="133" fill="#E7EEF7" font-family="Inter, Segoe UI, Helvetica, Arial, sans-serif" font-size="132" font-weight="800" letter-spacing="-6" textLength="450" lengthAdjust="spacingAndGlyphs">Gauge</text>
+</svg>

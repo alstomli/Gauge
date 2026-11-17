@@ -1,12 +1,33 @@
-# Gauge
+<h1 align="center">
+  <picture>
+    <source media="(prefers-color-scheme: dark)" srcset="assets/gauge-wordmark-dark.svg">
+    <source media="(prefers-color-scheme: light)" srcset="assets/gauge-wordmark-light.svg">
+    <img src="assets/gauge-wordmark-light.svg" alt="Gauge" width="660">
+  </picture>
+</h1>
 
-**Tokens · Cache · Credits.** See token usage, prompt-cache reuse and estimated credits for your local Codex chat in an embedded MCP dashboard.
+<h3 align="center">Token usage, cache reuse, and credit estimates for Codex</h3>
+
+<p align="center"><strong>Tokens · Cache · Credits</strong></p>
+
+<p align="center">
+  <a href="https://github.com/alstomli/Gauge/actions/workflows/ci.yml"><img src="https://github.com/alstomli/Gauge/actions/workflows/ci.yml/badge.svg" alt="Release checks"></a>
+  <a href="https://github.com/alstomli/Gauge/releases/latest"><img src="https://img.shields.io/github/v/release/alstomli/Gauge?color=176B59&amp;label=release" alt="Latest release"></a>
+  <a href="#quick-start"><img src="https://img.shields.io/badge/Python-3.11%2B-3776AB?logo=python&amp;logoColor=white" alt="Python 3.11 or newer"></a>
+  <a href="#quick-start"><img src="https://img.shields.io/badge/Supports-Codex_only-176B59" alt="Codex only"></a>
+  <a href="LICENSE"><img src="https://img.shields.io/badge/License-MIT-176B59" alt="MIT license"></a>
+</p>
+
+<p align="center">
+  <a href="#quick-start">Quick start</a> ·
+  <a href="#using-gauge">Using Gauge</a> ·
+  <a href="#updates-and-uninstall">Updates</a> ·
+  <a href="#troubleshooting">Troubleshooting</a> ·
+  <a href="PRIVACY.md">Privacy</a> ·
+  <a href="CONTRIBUTING.md">Contributing</a>
+</p>
 
 > **Codex only.** Gauge does not support ChatGPT conversations on web, desktop or mobile. If your desktop app offers both ChatGPT and Codex modes, open a local chat in **Codex mode**. The app's name alone does not establish compatibility.
-
-[![Release checks](https://github.com/alstomli/Gauge/actions/workflows/ci.yml/badge.svg)](https://github.com/alstomli/Gauge/actions/workflows/ci.yml)
-
-[Quick start](#quick-start) · [Using Gauge](#using-gauge) · [Updates](#updates-and-uninstall) · [Troubleshooting](#troubleshooting) · [Privacy](PRIVACY.md) · [Contributing](CONTRIBUTING.md)
 
 Gauge reads existing local logs. Collection and dashboard refresh make **no model calls** and require no OpenAI API key, hosted backend or separate browser dashboard. This is an independent project, not an OpenAI product or official-directory listing.
 
