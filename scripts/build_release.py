@@ -16,6 +16,7 @@ ROOT_FILES = (
     'pyproject.toml', 'requirements.lock', 'uv.lock', 'plugin.json', 'mcp.json',
     'package.json', 'package-lock.json', '.agents/plugins/marketplace.json',
     '.claude-plugin/plugin.json', '.claude-plugin/marketplace.json',
+    '.claude-plugin/icon.png',
 )
 DIRECTORIES = {
     'cache_monitor': {'*.py'}, 'cache_monitor/web': {'*.html'},

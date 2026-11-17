@@ -6,6 +6,7 @@
   "homepage": "https://github.com/alstomli/Gauge",
   "repository": "https://github.com/alstomli/Gauge",
   "license": "MIT",
+  "icon": "./.claude-plugin/icon.png",
   "keywords": ["claude-code", "codex", "tokens", "cache", "cost", "monitoring", "mcp-apps"],
   "mcpServers": {
     "cache-monitor": {
